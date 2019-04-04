@@ -62,7 +62,21 @@ public class ChargingSessionController {
      */
     @PutMapping(value = "/chargingSession/{sessionId}", produces = "application/json")
     public ResponseEntity<ChargingSession> stopChargingSession(@PathVariable int sessionId) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+
+        Optional<ChargingSession> optionalSession = repository.findById(sessionId);
+
+        if (optionalSession.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        ChargingSession session = optionalSession.get();
+        session.finishCharging();
+        ChargingSession saved = repository.save(session);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(saved);
     }
 
     /**
