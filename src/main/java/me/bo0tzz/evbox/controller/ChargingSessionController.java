@@ -40,7 +40,19 @@ public class ChargingSessionController {
      */
     @PostMapping(value = "/chargingSession", consumes = "application/json", produces = "application/json")
     public ResponseEntity<ChargingSession> submitChargingSession(@RequestBody @Valid ChargingStation station) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+
+        ChargingSession session = ChargingSession.builder()
+                .stationId(station)
+                .startedAt(new Date())
+                .id(repository.generateId())
+                .build();
+
+        ChargingSession saved = repository.save(session);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(saved);
     }
 
     /**

@@ -1,12 +1,14 @@
 package me.bo0tzz.evbox.model;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Setter;
 
 import java.util.Date;
 
 @Data
+@Builder
 public class ChargingSession {
 
     /**
@@ -28,6 +30,7 @@ public class ChargingSession {
      * The status of the charging session
      */
     @Setter(AccessLevel.NONE)
+    @Builder.Default
     ChargingStatus status = ChargingStatus.IN_PROGRESS;
 
     public void finishCharging() {
