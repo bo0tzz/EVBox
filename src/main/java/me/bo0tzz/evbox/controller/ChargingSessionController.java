@@ -70,19 +70,17 @@ public class ChargingSessionController {
 
         Optional<ChargingSession> optionalSession = sessionRepository.findById(sessionId);
 
-        if (optionalSession.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return optionalSession.map(s -> {
+            s.finishCharging();
+            ChargingSession saved = sessionRepository.save(s);
+            metadataRepository.registerSessionStop();
 
-        ChargingSession session = optionalSession.get();
-        session.finishCharging();
-        ChargingSession saved = sessionRepository.save(session);
-        metadataRepository.registerSessionStop();
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(saved);
+        }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(saved);
     }
 
     /**
