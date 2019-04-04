@@ -3,6 +3,7 @@ package me.bo0tzz.evbox.controller;
 import me.bo0tzz.evbox.model.ChargingSession;
 import me.bo0tzz.evbox.model.ChargingSessionSummary;
 import me.bo0tzz.evbox.model.ChargingStation;
+import me.bo0tzz.evbox.repository.ChargingSessionMetadataRepository;
 import me.bo0tzz.evbox.repository.ChargingSessionRepository;
 import me.bo0tzz.evbox.validation.ChargingStationValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,14 @@ import java.util.Optional;
 public class ChargingSessionController {
 
     private final ChargingStationValidator chargingStationValidator;
-    private final ChargingSessionRepository repository;
+    private final ChargingSessionRepository sessionRepository;
+    private final ChargingSessionMetadataRepository metadataRepository;
 
     @Autowired
-    public ChargingSessionController(ChargingStationValidator chargingStationValidator, ChargingSessionRepository repository) {
+    public ChargingSessionController(ChargingStationValidator chargingStationValidator, ChargingSessionRepository sessionRepository, ChargingSessionMetadataRepository metadataRepository) {
         this.chargingStationValidator = chargingStationValidator;
-        this.repository = repository;
+        this.sessionRepository = sessionRepository;
+        this.metadataRepository = metadataRepository;
     }
 
     @InitBinder
@@ -44,10 +47,11 @@ public class ChargingSessionController {
         ChargingSession session = ChargingSession.builder()
                 .stationId(station)
                 .startedAt(new Date())
-                .id(repository.generateId())
+                .id(sessionRepository.generateId())
                 .build();
 
-        ChargingSession saved = repository.save(session);
+        ChargingSession saved = sessionRepository.save(session);
+        metadataRepository.registerSessionStart();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -63,7 +67,7 @@ public class ChargingSessionController {
     @PutMapping(value = "/chargingSession/{sessionId}", produces = "application/json")
     public ResponseEntity<ChargingSession> stopChargingSession(@PathVariable int sessionId) {
 
-        Optional<ChargingSession> optionalSession = repository.findById(sessionId);
+        Optional<ChargingSession> optionalSession = sessionRepository.findById(sessionId);
 
         if (optionalSession.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -71,7 +75,8 @@ public class ChargingSessionController {
 
         ChargingSession session = optionalSession.get();
         session.finishCharging();
-        ChargingSession saved = repository.save(session);
+        ChargingSession saved = sessionRepository.save(session);
+        metadataRepository.registerSessionStop();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -85,7 +90,13 @@ public class ChargingSessionController {
      */
     @GetMapping(value = "/chargingSessions", produces = "application/json")
     public ResponseEntity<ChargingSessionSummary> getChargingSessions() {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+
+        ChargingSessionSummary summary = metadataRepository.getSummary();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(summary);
     }
 
 }
