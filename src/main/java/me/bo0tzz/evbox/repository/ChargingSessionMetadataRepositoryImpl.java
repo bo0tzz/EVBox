@@ -40,10 +40,10 @@ public class ChargingSessionMetadataRepositoryImpl implements ChargingSessionMet
 
         while (duration.toMinutes() > 0) {
             list.removeFirst();
-            el = list.getFirst();
-            if (el == null) {
+            if (list.isEmpty()) {
                 return;
             }
+            el = list.getFirst();
             duration = Duration.between(el, now);
         }
 
