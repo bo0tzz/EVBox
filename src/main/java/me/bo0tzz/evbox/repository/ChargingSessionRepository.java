@@ -12,8 +12,18 @@ public interface ChargingSessionRepository {
      */
     int generateId();
 
+    /**
+     * Save a ChargingSession
+     * @param session the session to save
+     * @return the saved session
+     */
     ChargingSession save(ChargingSession session);
 
+    /**
+     * Find a ChargingSession by ID
+     * @param id the ID by which to find the ChargingSession
+     * @return an optional containing the ChargingSession, or empty if the session does not exist.
+     */
     Optional<ChargingSession> findById(Integer id);
 
 }
