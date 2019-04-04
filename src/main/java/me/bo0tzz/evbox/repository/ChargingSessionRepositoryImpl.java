@@ -21,7 +21,7 @@ public class ChargingSessionRepositoryImpl implements ChargingSessionRepository 
 
     @Override
     public int generateId() {
-        int id = random.nextInt();
+        int id = random.nextInt(Integer.MAX_VALUE);
 
         //Avoid duplicate IDs
         while (sessions.containsKey(id)) {
