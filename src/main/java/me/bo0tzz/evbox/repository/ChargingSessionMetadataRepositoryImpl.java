@@ -35,13 +35,16 @@ public class ChargingSessionMetadataRepositoryImpl implements ChargingSessionMet
         }
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime stoppedEl = list.getFirst();
-        Duration stoppedDuration = Duration.between(stoppedEl, now);
+        LocalDateTime el = list.getFirst();
+        Duration duration = Duration.between(el, now);
 
-        while (stoppedDuration.toMinutes() > 0) {
+        while (duration.toMinutes() > 0) {
             list.removeFirst();
-            stoppedEl = list.getFirst();
-            stoppedDuration = Duration.between(stoppedEl, now);
+            el = list.getFirst();
+            if (el == null) {
+                return;
+            }
+            duration = Duration.between(el, now);
         }
 
     }
