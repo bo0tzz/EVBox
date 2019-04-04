@@ -121,7 +121,7 @@ public class ChargingControllerTest {
     public void testGetSessionSummary() {
 
         ResponseEntity<ChargingSessionSummary> response =
-                restTemplate.getForEntity(BASE_PATH, ChargingSessionSummary.class);
+                restTemplate.getForEntity("/chargingSessions", ChargingSessionSummary.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         ChargingSessionSummary chargingSessionSummary = response.getBody();
