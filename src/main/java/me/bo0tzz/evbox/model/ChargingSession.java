@@ -17,7 +17,7 @@ public class ChargingSession {
     /**
      * The ID of the charging station where this session happened
      */
-    final int stationId;
+    final ChargingStation stationId;
 
     /**
      * The timestamp at which the charging session started
