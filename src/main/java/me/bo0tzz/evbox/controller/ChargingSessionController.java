@@ -15,8 +15,8 @@ public class ChargingSessionController {
      * @param station the station for which to start a session.
      * @return the started charging session.
      */
-    @PostMapping(value = "/chargingSession", produces = "application/json")
-    public ResponseEntity<ChargingSession> submitChargingSession(ChargingStation station) {
+    @PostMapping(value = "/chargingSession", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<ChargingSession> submitChargingSession(@RequestBody ChargingStation station) {
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
