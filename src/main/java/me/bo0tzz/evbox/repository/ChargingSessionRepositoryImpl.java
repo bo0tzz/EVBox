@@ -41,28 +41,4 @@ public class ChargingSessionRepositoryImpl implements ChargingSessionRepository 
         return Optional.ofNullable(sessions.get(id));
     }
 
-    @Override
-    public boolean existsById(Integer id) {
-        return sessions.containsKey(id);
-    }
-
-    @Override
-    public Iterable<ChargingSession> findAll() {
-        return sessions.values();
-    }
-
-    @Override
-    public long count() {
-        return sessions.size();
-    }
-
-    @Override
-    public void deleteById(Integer id) {
-        sessions.remove(id);
-    }
-
-    @Override
-    public void deleteAll() {
-        sessions.clear();
-    }
 }

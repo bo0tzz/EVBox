@@ -16,14 +16,5 @@ public interface ChargingSessionRepository {
 
     Optional<ChargingSession> findById(Integer id);
 
-    boolean existsById(Integer id);
-
-    Iterable<ChargingSession> findAll();
-
-    long count();
-
-    void deleteById(Integer id);
-
-    void deleteAll();
 }
 

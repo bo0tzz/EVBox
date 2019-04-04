@@ -31,6 +31,7 @@ public class ChargingSessionController {
         this.metadataRepository = metadataRepository;
     }
 
+    @SuppressWarnings("unused")
     @InitBinder
     protected void initBinder(final WebDataBinder binder) {
         binder.addValidators(chargingStationValidator);
