@@ -3,12 +3,29 @@ package me.bo0tzz.evbox.controller;
 import me.bo0tzz.evbox.model.ChargingSession;
 import me.bo0tzz.evbox.model.ChargingSessionSummary;
 import me.bo0tzz.evbox.model.ChargingStation;
+import me.bo0tzz.evbox.validation.ChargingStationValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 public class ChargingSessionController {
+
+    private final ChargingStationValidator chargingStationValidator;
+
+    @Autowired
+    public ChargingSessionController(ChargingStationValidator chargingStationValidator) {
+        this.chargingStationValidator = chargingStationValidator;
+    }
+
+    @InitBinder
+    protected void initBinder(final WebDataBinder binder) {
+        binder.addValidators(chargingStationValidator);
+    }
 
     /**
      * Submit a new charging session to a station.
@@ -16,7 +33,7 @@ public class ChargingSessionController {
      * @return the started charging session.
      */
     @PostMapping(value = "/chargingSession", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<ChargingSession> submitChargingSession(@RequestBody ChargingStation station) {
+    public ResponseEntity<ChargingSession> submitChargingSession(@RequestBody @Valid ChargingStation station) {
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
