@@ -51,6 +51,7 @@ public class ChargingSessionController {
                 .id(sessionRepository.generateId())
                 .build();
 
+        //TODO: Thread safety between ID generation and insertion. Use UUIDs instead?
         ChargingSession saved = sessionRepository.save(session);
         metadataRepository.registerSessionStart();
 
@@ -70,6 +71,7 @@ public class ChargingSessionController {
 
         Optional<ChargingSession> optionalSession = sessionRepository.findById(sessionId);
 
+        //TODO: Thread safety between retrieve and update. Have atomic method in repository instead?
         return optionalSession.map(s -> {
             s.finishCharging();
             ChargingSession saved = sessionRepository.save(s);

@@ -5,22 +5,27 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
+import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 @Repository
 public class ChargingSessionMetadataRepositoryImpl implements ChargingSessionMetadataRepository {
 
-    private final LinkedList<LocalDateTime> startedSessions;
-    private final LinkedList<LocalDateTime> stoppedSessions;
+    private final Deque<LocalDateTime> startedSessions;
+    private final Deque<LocalDateTime> stoppedSessions;
 
     public ChargingSessionMetadataRepositoryImpl() {
-        startedSessions = new LinkedList<>();
-        stoppedSessions = new LinkedList<>();
+        startedSessions = new ConcurrentLinkedDeque<>();
+        stoppedSessions = new ConcurrentLinkedDeque<>();
     }
 
     private void prune() {
-        pruneList(startedSessions);
-        pruneList(stoppedSessions);
+        synchronized (startedSessions) {
+            pruneList(startedSessions);
+        }
+        synchronized (stoppedSessions) {
+            pruneList(stoppedSessions);
+        }
     }
 
     /**
@@ -28,7 +33,7 @@ public class ChargingSessionMetadataRepositoryImpl implements ChargingSessionMet
      * It expects chronological insertion order, where the head of the list is the oldest element.
      * @param list the list to prune from.
      */
-    private void pruneList(LinkedList<LocalDateTime> list) {
+    private void pruneList(Deque<LocalDateTime> list) {
 
         if (list.isEmpty()) {
             return;
