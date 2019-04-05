@@ -3,10 +3,7 @@ package me.bo0tzz.evbox.repository;
 import me.bo0tzz.evbox.model.ChargingSession;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Repository
 public class ChargingSessionRepositoryImpl implements ChargingSessionRepository {
@@ -15,7 +12,7 @@ public class ChargingSessionRepositoryImpl implements ChargingSessionRepository 
     private final Random random;
 
     public ChargingSessionRepositoryImpl(Random random) {
-        this.sessions = new HashMap<>();
+        this.sessions = Collections.synchronizedMap(new HashMap<>());
         this.random = random;
     }
 
@@ -40,5 +37,7 @@ public class ChargingSessionRepositoryImpl implements ChargingSessionRepository 
     public Optional<ChargingSession> findById(Integer id) {
         return Optional.ofNullable(sessions.get(id));
     }
+
+
 
 }
