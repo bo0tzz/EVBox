@@ -45,20 +45,13 @@ public class ChargingSessionController {
     @PostMapping(value = "/chargingSession", consumes = "application/json", produces = "application/json")
     public ResponseEntity<ChargingSession> submitChargingSession(@RequestBody @Valid ChargingStation station) {
 
-        ChargingSession session = ChargingSession.builder()
-                .stationId(station)
-                .startedAt(new Date())
-                .id(sessionRepository.generateId())
-                .build();
-
-        //TODO: Thread safety between ID generation and insertion. Use UUIDs instead?
-        ChargingSession saved = sessionRepository.save(session);
+        ChargingSession created = sessionRepository.createNewSession(station);
         metadataRepository.registerSessionStart();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(saved);
+                .body(created);
     }
 
     /**
@@ -69,20 +62,16 @@ public class ChargingSessionController {
     @PutMapping(value = "/chargingSession/{sessionId}", produces = "application/json")
     public ResponseEntity<ChargingSession> stopChargingSession(@PathVariable int sessionId) {
 
-        Optional<ChargingSession> optionalSession = sessionRepository.findById(sessionId);
+        Optional<ChargingSession> optional = sessionRepository.stopChargingSession(sessionId);
 
-        //TODO: Thread safety between retrieve and update. Have atomic method in repository instead?
-        return optionalSession.map(s -> {
-            s.finishCharging();
-            ChargingSession saved = sessionRepository.save(s);
+        return optional.map(stopped -> {
             metadataRepository.registerSessionStop();
 
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(saved);
+                    .body(stopped);
         }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-
     }
 
     /**

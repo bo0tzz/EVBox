@@ -1,6 +1,7 @@
 package me.bo0tzz.evbox.repository;
 
 import me.bo0tzz.evbox.model.ChargingSession;
+import me.bo0tzz.evbox.model.ChargingStation;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -28,16 +29,39 @@ public class ChargingSessionRepositoryImpl implements ChargingSessionRepository 
     }
 
     @Override
-    public ChargingSession save(ChargingSession entity) {
+    public ChargingSession createNewSession(ChargingStation chargingStation) {
+
+        ChargingSession.ChargingSessionBuilder builder = ChargingSession.builder()
+                .stationId(chargingStation)
+                .startedAt(new Date());
+
+        synchronized (sessions) {
+            ChargingSession session = builder.id(this.generateId()).build();
+            sessions.put(session.getId(), session);
+            return session;
+        }
+
+    }
+
+    @Override
+    public Optional<ChargingSession> stopChargingSession(Integer id) {
+        synchronized (sessions) {
+            Optional<ChargingSession> session = this.findById(id);
+            return session.map(s -> {
+                s.finishCharging();
+                this.update(s);
+                return s;
+            });
+        }
+    }
+
+    private ChargingSession update(ChargingSession entity) {
         sessions.put(entity.getId(), entity);
         return entity;
     }
 
-    @Override
-    public Optional<ChargingSession> findById(Integer id) {
+    private Optional<ChargingSession> findById(Integer id) {
         return Optional.ofNullable(sessions.get(id));
     }
-
-
 
 }

@@ -1,6 +1,7 @@
 package me.bo0tzz.evbox.repository;
 
 import me.bo0tzz.evbox.model.ChargingSession;
+import me.bo0tzz.evbox.model.ChargingStation;
 
 import java.util.Optional;
 
@@ -13,18 +14,17 @@ public interface ChargingSessionRepository {
     int generateId();
 
     /**
-     * Save a ChargingSession
-     * @param session the session to save
-     * @return the saved session
+     * Create a new charging session
+     * @param chargingStation the charging station at which the session takes place
+     * @return the newly created charging session
      */
-    ChargingSession save(ChargingSession session);
+    ChargingSession createNewSession(ChargingStation chargingStation);
 
     /**
-     * Find a ChargingSession by ID
-     * @param id the ID by which to find the ChargingSession
-     * @return an optional containing the ChargingSession, or empty if the session does not exist.
+     * Stop a charging session
+     * @param id the id for the session to finalize
+     * @return an Optional with the stopped charging session, or empty if the session does not exist
      */
-    Optional<ChargingSession> findById(Integer id);
-
+    Optional<ChargingSession> stopChargingSession(Integer id);
 }
 
